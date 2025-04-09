@@ -38,9 +38,17 @@
 - [📖 详细教程](./docs/tutorial.md)
 - [🗓️ 更新日志](./CHANGELOG.md)
 - [❤️ 赞赏](#赞赏)
-- [👀 关注(更新订阅+答疑交流)](#关注)
+- [👀 关注公众号](#关注)
 - [📣 免责声明](#免责声明)
 - [⚖️ 许可证](#许可证)
+
+> [!IMPORTANT]
+> 1. 默认数据源，如订阅源，来源于Github开源项目，仅供示例作用，可能出现稳定性问题
+> 2. 本项目不提供对接口结果稳定性的保证与解释
+> 3. 若要实现最佳的稳定性，建议自行维护数据源
+
+<details>
+  <summary>默认数据源</summary>
 
 📍订阅源来自：
 
@@ -60,9 +68,12 @@
 
 - [fanmingming/live](https://github.com/fanmingming/live)
 
+</details>
+
 ## 特点
 
 - ✅ 自定义模板，生成您想要的频道
+- ✅ 支持RTMP推流(live/hls)，提升播放体验
 - ✅ 支持多种获取源方式：本地源、组播源、酒店源、订阅源、关键字搜索
 - ✅ 接口测速验效，获取延迟、速率、分辨率，过滤无效接口
 - ✅ 偏好设置：IPv4、IPv6、接口来源排序优先级与数量配置、接口白名单
@@ -72,36 +83,33 @@
 
 ## 最新结果
 
-- 接口源：
+> [!IMPORTANT]\
+> 以下地址国内访问可能会失败，建议在前拼接代理地址使用，公众号可回复`CDN`获取
+
+### 直播源
+
+- 默认
 
 ```bash
 https://raw.githubusercontent.com/Guovin/iptv-api/gd/output/result.m3u
 ```
 
-```bash
-https://raw.githubusercontent.com/Guovin/iptv-api/gd/output/result.txt
-```
-
-或
+- IPv6
 
 ```bash
-https://cdn.jsdelivr.net/gh/Guovin/iptv-api@gd/output/result.m3u
+https://raw.githubusercontent.com/Guovin/iptv-api/gd/output/ipv6/result.m3u
 ```
+
+- IPv4
 
 ```bash
-https://cdn.jsdelivr.net/gh/Guovin/iptv-api@gd/output/result.txt
+https://raw.githubusercontent.com/Guovin/iptv-api/gd/output/ipv4/result.m3u
 ```
 
-- 数据源：
+### 点播源
 
 ```bash
 https://raw.githubusercontent.com/Guovin/iptv-api/gd/source.json
-```
-
-或
-
-```bash
-https://cdn.jsdelivr.net/gh/Guovin/iptv-api@gd/source.json
 ```
 
 ## 配置
@@ -124,6 +132,7 @@ https://cdn.jsdelivr.net/gh/Guovin/iptv-api@gd/source.json
 | open_online_search     | 开启关键字搜索源功能                                                                                                                                                            | False             |
 | open_proxy             | 开启代理，自动获取免费可用代理，若更新无数据可开启此模式                                                                                                                                          | False             |
 | open_request           | 开启查询请求，数据来源于网络（仅针对酒店源与组播源）                                                                                                                                            | False             |
+| open_rtmp              | 开启RTMP推流功能，需要安装FFmpeg，利用本地带宽提升接口播放体验，推荐多人使用时开启，个人使用不建议开启，工作流不支持该功能                                                                                                    | False             |
 | open_service           | 开启页面服务，用于控制是否启动结果页面服务；如果使用青龙等平台部署，有专门设定的定时任务，需要更新完成后停止运行，可以关闭该功能                                                                                                      | True              |
 | open_sort              | 开启排序功能（响应速度、日期、分辨率）                                                                                                                                                   | True              |
 | open_subscribe         | 开启订阅源功能                                                                                                                                                               | False             |
@@ -206,13 +215,7 @@ pipenv run ui
 
 ### Docker
 
-- iptv-api（完整版本）：性能要求较高，更新速度较慢，稳定性、成功率高；修改配置 open_driver = False 可切换到 Lite
-  版本运行模式（推荐酒店源、组播源、关键字搜索使用此版本）
-- iptv-api:lite（精简版本）：轻量级，性能要求低，更新速度快，稳定性不确定（推荐订阅源使用此版本）
-
 #### 1. 拉取镜像
-
-- iptv-api
 
 ```bash
 docker pull guovern/iptv-api:latest
@@ -224,30 +227,10 @@ docker pull guovern/iptv-api:latest
 docker pull docker.1ms.run/guovern/iptv-api:latest
 ```
 
-- iptv-api:lite
-
-```bash
-docker pull guovern/iptv-api:lite
-```
-
-🚀 代理加速（推荐国内用户使用）：
-
-```bash
-docker pull docker.1ms.run/guovern/iptv-api:lite
-```
-
 #### 2. 运行容器
-
-- iptv-api
 
 ```bash
 docker run -d -p 8000:8000 guovern/iptv-api
-```
-
-- iptv-api:lite
-
-```bash
-docker run -d -p 8000:8000 guovern/iptv-api:lite
 ```
 
 ##### 挂载（推荐）：
@@ -256,41 +239,59 @@ docker run -d -p 8000:8000 guovern/iptv-api:lite
 
 以宿主机路径/etc/docker 为例：
 
-- iptv-api
-
 ```bash
 -v /etc/docker/config:/iptv-api/config
 -v /etc/docker/output:/iptv-api/output
 ```
 
-- iptv-api:lite
-
-```bash
--v /etc/docker/config:/iptv-api-lite/config
--v /etc/docker/output:/iptv-api-lite/output
-```
-
 ##### 环境变量：
 
-- 端口
-
-```bash
--e APP_PORT=8000
-```
-
-- 定时执行时间
-
-```bash
--e UPDATE_CRON="0 22,10 * * *"
-```
+| 变量          | 描述                 | 默认值                |
+|:------------|:-------------------|:-------------------|
+| APP_HOST    | 服务host地址，可修改使用公网域名 | "http://localhost" |
+| APP_PORT    | 服务端口               | 8000               |
+| UPDATE_CRON | 定时任务执行时间           | "0 22,10 * * *"    |
 
 #### 3. 更新结果
 
-- 接口地址：`ip:8000`
-- m3u 接口：`ip:8000/m3u`
-- txt 接口：`ip:8000/txt`
-- 接口内容：`ip:8000/content`
-- 测速日志：`ip:8000/log`
+| 接口        | 描述         |
+|:----------|:-----------|
+| /         | 默认接口       |
+| /m3u      | m3u 格式接口   |
+| /txt      | txt 格式接口   |
+| /ipv4     | ipv4 默认接口  |
+| /ipv6     | ipv6 默认接口  |
+| /ipv4/txt | ipv4 txt接口 |
+| /ipv6/txt | ipv6 txt接口 |
+| /ipv4/m3u | ipv4 m3u接口 |
+| /ipv6/m3u | ipv6 m3u接口 |
+| /content  | 接口文本内容     |
+| /log      | 测速日志       |
+
+- RTMP 推流：
+
+> [!NOTE]
+> 1. 如果需要对本地视频源进行推流，可在`config`目录下新建`live`或`hls`（推荐）文件夹
+> 2. live文件夹用于推流live接口，hls文件夹用于推流hls接口
+> 3. 将以`频道名称命名`的视频文件放入其中，程序会自动推流到对应的频道中
+> 4. 可访问 http://localhost:8080/stat 查看实时推流状态统计数据
+
+| 推流接口           | 描述                |
+|:---------------|:------------------|
+| /live          | 推流live接口          |
+| /hls           | 推流hls接口           |
+| /live/txt      | 推流live txt接口      |
+| /hls/txt       | 推流hls txt接口       |
+| /live/m3u      | 推流live m3u接口      |
+| /hls/m3u       | 推流hls m3u接口       |
+| /live/ipv4/txt | 推流live ipv4 txt接口 |
+| /hls/ipv4/txt  | 推流hls ipv4 txt接口  |
+| /live/ipv4/m3u | 推流live ipv4 m3u接口 |
+| /hls/ipv4/m3u  | 推流hls ipv4 m3u接口  |
+| /live/ipv6/txt | 推流live ipv6 txt接口 |
+| /hls/ipv6/txt  | 推流hls ipv6 txt接口  |
+| /live/ipv6/m3u | 推流live ipv6 m3u接口 |
+| /hls/ipv6/m3u  | 推流hls ipv6 m3u接口  |
 
 ## 更新日志
 
